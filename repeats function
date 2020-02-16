@@ -1,0 +1,36 @@
+#########################################
+#### number of unique values
+#########################################
+
+nb.unique.values <- function(data, dec, dist, reps){
+#data is the variable to test
+#dec is the number of decimals
+#dist is the distribution of the variable needs to be one of the following "gauss", "poiss", "unif"
+#reps is the number of replicates in the null distribution for each sample size.
+
+#preparation
+  range <- ifelse((length(data)-2000)<0, 0, (length(data)-2000)):(length(data)+2000)
+  #n.dec <- nchar(as.character(data - trunc(data))) lots of bugs.
+  #n.dec <- ((data - round(data))*100) - round(((data - round(data))*100)) this does not work either.
+# simulations
+  if(dist == "gauss")
+      {nb.uniques <- sapply(range, function(x){replicate(n = reps, length(unique(round(rnorm(mean = mean(data), sd = sd(data), n = x), digits = dec))) )})}
+  if(dist == "unif")
+      {nb.uniques <- sapply(range, function(x){replicate(n = reps, length(unique(round(runif(min = min(data), max = max(data), n = x), digits = dec))) )})}
+  if(dist == "poiss")
+      {nb.uniques <- sapply(range, function(x){replicate(n = reps, length(unique(round(rpois(lambda=mean(data), n = x), digits = dec))) )})}
+  plot(c(rep(range, each = reps), length(data)), c(nb.uniques, length(unique(data)))
+    , pch = 16, col = '#11111140', type = 'p')
+# the data
+  points(length(data), length(unique(data)), pch = 16, col = 'red', cex = 2)
+  text(length(data), length(unique(data)), 'You are here', col = 'red', cex = 1.2, pos = 4)
+}
+
+data.kate <- read.delim2("data-from-kate-20191213.csv", sep = ';', dec = ',')
+measurements <- with(data.kate
+  , c(Measurement.1, Measurement.2, Measurement.3, Measurement.4, Measurement.5))
+measurements.1 <- with(data.kate
+  , c(Measurement.1.1, Measurement.2.1, Measurement.3.1, Measurement.4.1, Measurement.5.1))
+
+nb.unique.values(measurements, 2, "gauss", 10)
+nb.unique.values(measurements, 2, "unif", 10)

@@ -1,0 +1,42 @@
+###########################################
+### exploring distribution of final digits (Benford's law?)
+###########################################
+
+digits.dist <- function(data, reps.graph, reps.prob){
+#data is the vector to be assessed.
+#reps.graph is the number of replicates when simulating the null distribution for the figure.
+#reps.prob is the number of replicates when estimating the probability of observing the data's distribution of last digit by chance.
+
+# Compute range of values to be assessed
+  range <- 10:(length(data)+1000)
+# we remove the maximum value in case variable has an upper boundary
+  data <- data[data!=max(data)]
+# Extract the last digit of each observation
+  digits <- sapply(data
+    , function(x)
+      {substring(as.character(x)
+        , nchar(as.character(x))
+        , nchar(as.character(x)))})
+# generate digit distribution
+  #dists  <- sapply(range, function(x) {replicate(n = reps.graph, var(table(floor(runif(min = 0, max = 9.999999999, n = x))/x)))})
+  dists  <- sapply(range, function(x) {replicate(n = reps.graph, var(table(sample(1:9, size = x, replace = TRUE))/x))})
+# Compute quantile of observed data
+  dist.null  <- replicate(n = reps.prob, var(table(round(runif(min = 0, max = 9.999999999, n = length(data)), 0)/length(data))))
+# plot results for comparison
+  par(mfrow = c(1,2))
+  hist(as.numeric(as.character(digits)), breaks = 0:9)
+  plot(rep(range, each = reps.graph), dists, type = 'p', pch = 16, col = "#11111140")
+  points(length(digits), var(table(digits)/length(digits)), type = 'p', pch = 16, col = "red")
+  text(length(digits), var(table(digits)/length(digits)), "you are here", col = "red", pos = 4)
+# return p value
+ifelse(which(dist.null<(var(table(digits)/length(digits))))/reps.prob>0.00001,
+        return(which(dist.null<(var(table(digits)/length(digits))))/reps.prob),
+        return("probability is < 0.00001)"))
+}
+
+data.kate <- read.delim2("data-from-kate-20191213.csv", sep = ';', dec = ',')
+measurements <- with(data.kate
+  , c(Measurement.1, Measurement.2, Measurement.3, Measurement.4, Measurement.5))
+measurements.1 <- with(data.kate
+  , c(Measurement.1.1, Measurement.2.1, Measurement.3.1, Measurement.4.1, Measurement.5.1))
+digits.dist(measurements, 100, 20000)

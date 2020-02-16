@@ -1,0 +1,15 @@
+################
+## ngram ideas from Anne Rutten
+################
+
+library(ngram)
+
+data.kate <- read.delim2("data-from-kate-20191213.csv", sep = ';', dec = ',')
+measurements <- with(data.kate
+  , c(Measurement.1, Measurement.2, Measurement.3, Measurement.4, Measurement.5))
+measurements.1 <- with(data.kate
+  , c(Measurement.1.1, Measurement.2.1, Measurement.3.1, Measurement.4.1, Measurement.5.1))
+
+measurements.string <- cat(measurements, sep = ' ')
+
+ng <- ngram(measurements.string, n=4)
