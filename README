@@ -1,1 +1,5 @@
 This project aims to develop a set of R function to detect common mistakes in datasets.
+The function currently available are
+1 - A function to detect a pattern in the last digits of the values of a continuous variable.
+2 - A function to detect anormal numbers of repeated values in quantitative variables.
+3 - The presence of repeated sequences of values in data.
